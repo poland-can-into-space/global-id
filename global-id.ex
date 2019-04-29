@@ -8,8 +8,9 @@ defmodule GlobalId do
 		Also, for 20 digits number is the 64 bits long id you were talking about (I am little unsure)
 	ID structure:
 		Id is a number that consist of 20 digits;
-		In a nut shell, [timestamp(), node_id(with magic), 3digits_number(with magic)]
-		first 13 digits are timestamp generated with the given timestamp function;
+		In a nut shell: [timestamp(), node_id(with magic), 3digits_number(with magic)]
+		
+		First 13 digits are timestamp generated with the given timestamp function;
 		next 4 is a node id, however, if the node id is smaller than 1000, lacking digits will be filled up with 0
 		(Example: node_id(1) -> 0001, node_id(522) -> 0552)
 		Last 3 digits are there to give uniqueness to the id in order to avoid conflict;
@@ -20,8 +21,8 @@ defmodule GlobalId do
 		get_id
 	"""
 	@spec get_id(non_neg_integer) :: non_neg_integer
-			def get_id(last_id) do
-				case make_id(last_id) do
+	def get_id(last_id) do
+		case make_id(last_id) do
 		 	{num, _} when num != last_id ->
 				num
 			 x ->
