@@ -20,24 +20,25 @@ defmodule GlobalId do
 		get_id
 	"""
 	@spec get_id(non_neg_integer) :: non_neg_integer
-	def get_id(last_id) do
-		case make_id(last_id) do
-		{num, _} when num != last_id -> num			
-		x ->
-		# tuple with an atom of error pops out when an error happens
-			IO.inspect {:error, x}
-			get_id(last_id)
+			def get_id(last_id) do
+				case make_id(last_id) do
+		 	{num, _} when num != last_id ->
+				num
+			 x ->
+				# tuple with an atom of error pops out when an error happens
+				IO.inspect {:error, x}
+				get_id(last_id)
 		end
 	end
 
 	def make_id(last_id) do
-	[
-		timestamp(),
-		fill_zero(node_id(), 4),
-		unique(last_id)
-	]
-	|> Enum.join("")
-	|> Integer.parse()
+		[
+			timestamp(),
+			fill_zero(node_id(), 4),
+		 	unique(last_id)
+		]
+		|> Enum.join("")
+		|> Integer.parse()
 	end
 
 	def unique(last_id) do
