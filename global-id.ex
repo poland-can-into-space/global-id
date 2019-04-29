@@ -3,18 +3,20 @@ defmodule GlobalId do
 	GlobalId module contains an implementation of a guaranteed globally unique id system.
 
 	Assumption:
-		Assumption is that there won't be more than 100 ids issued in a single milli second.
-		Thus, timestamp itself can give uniqueness to the id but you can reinforce it with a 3 digits number
-		Also, for 20 digits number is the 64 bits long id you were talking about (I am little unsure)
+		timestamp itself can give uniqueness to the id but you can reinforce it with a 3 digits number
+		Also, the 64 bits long id you were talking about can be realized with 20digits long integer (I am little unsure)
 	ID structure:
-		Id is a number that consist of 20 digits;
-		In a nut shell: [timestamp(), node_id(with magic), 3digits_number(with magic)]
-		
-		First 13 digits are timestamp generated with the given timestamp function;
+		My Id is a number that consist of 20 digits;
+		In a nut shell -> [timestamp(), node_id(with magic), 3digits_number(with magic)]
+		first 13 digits are timestamp generated with the given timestamp function;
 		next 4 is a node id, however, if the node id is smaller than 1000, lacking digits will be filled up with 0
 		(Example: node_id(1) -> 0001, node_id(522) -> 0552)
 		Last 3 digits are there to give uniqueness to the id in order to avoid conflict;
 		it is basically a counter that ranges between 000..999
+	Advantage of the ID structure:
+		You are able to know when/who created the id.
+	Disadvantage:
+		It can only create 1000 Ids per milli second
 	"""
 
 	@doc """
@@ -26,8 +28,9 @@ defmodule GlobalId do
 		 	{num, _} when num != last_id ->
 				num
 			 x ->
-				# tuple with an atom of error pops out when an error happens
+				# tuple with an atom of error pops out if it fails creating a valid id
 				IO.inspect {:error, x}
+				# retry
 				get_id(last_id)
 		end
 	end
@@ -42,7 +45,7 @@ defmodule GlobalId do
 		|> Integer.parse()
 	end
 
-	def unique(last_id) do
+	defp unique(last_id) do
 		Integer.digits(last_id+1)
 		|> Enum.slice(-3..-1)
 		|> Integer.undigits()
